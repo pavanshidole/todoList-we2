@@ -8,6 +8,15 @@ const AddBtn=document.getElementById("AddBtn");
 const updateBtn=document.getElementById("updateBtn");
 
 
+const snackBar=((title,icon)=>{
+    swal.fire({
+        title:title,
+        icon:icon,
+        timer:4000,
+        confirmButtonColor:"#00ff00",
+    })
+})
+
 function uuid() {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'
     .replace(/[xy]/g, function (c) {
@@ -32,6 +41,7 @@ const onMsgData=()=>{
 
 const onEdit=(ele)=>{
     let editId=ele.closest("li").id;
+    localStorage.setItem("editId",editId);
     let editObj=todoArr.find(obj=>obj.todoId===editId);
    
     cl(editObj);
@@ -108,17 +118,33 @@ const onTodoForm=(ele)=>{
     
     localStorage.setItem("todoArr",JSON.stringify(todoArr));
 
+    snackBar(`this  ${todoObj.todoitem}  todoitem Added is successFully!!`,`success`);
+
     onMsgData();
     
 }
 
 
+const onUpdateBtn=()=>{
+    let updateId=localStorage.getItem("editId");
+    let updateObj={
+        todoitem:todoitemControl.value,
+        todoId:updateId,
+    }
+
+    let getIndex=todoArr.findIndex(obj=> obj.todoId===updateId);
+
+    todoArr[getIndex]=updateObj;
+    localStorage.setItem("todoArr", JSON.stringify(todoArr));
+    let list=document.getElementById(updateId).firstElementChild;
+    list.innerHTML=`${updateObj.todoitem}`;
+    cl(todoArr);
+
+    snackBar(`this  ${updateObj.todoitem}  todoitem update is successFully!!`,`success`);
+    AddBtn.classList.remove("d-none");
+    updateBtn.classList.add("d-none");
+}
+
+
 todoform.addEventListener("submit", onTodoForm);
-
-let arr=[2,4,6,8,10];
-
-let double=arr.map(num=>{
-    return num*2;
-})
-
-console.log(double);
+updateBtn.addEventListener("click", onUpdateBtn);
